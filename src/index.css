@@ -1,0 +1,531 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Figma Design System
+   Vibrant multi-color · Playful yet professional
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+:root {
+  /* Canvas (Figma's warm off-white workspace) */
+  --canvas: #F0EFE9;
+
+  /* Surfaces */
+  --surface: #FFFFFF;
+  --surface-raised: #FAFAFA;
+
+  /* Borders */
+  --border: #E6E6E6;
+  --border-strong: #C7C7C7;
+
+  /* Text */
+  --text-primary: #1E1E1E;
+  --text-secondary: #6B6B6B;
+  --text-muted: #9A9A9A;
+
+  /* Figma brand multi-colors */
+  --figma-purple: #9747FF;
+  --figma-blue:   #0D99FF;
+  --figma-red:    #F24822;
+  --figma-green:  #1BC47D;
+
+  /* Step accent colors */
+  --step-1: var(--figma-blue);
+  --step-2: var(--figma-red);
+  --step-3: var(--figma-green);
+
+  /* UI states */
+  --hover-bg: #F5F5F5;
+  --selected-bg: #F0F0FF;
+  --focus-ring: rgba(151, 71, 255, 0.18);
+
+  /* Semantic colors for demos */
+  --bad-bg:    #FFF5F4;
+  --bad-border: #FFCDC7;
+  --bad-text:   #C73B1B;
+  --good-bg:    #F0FDF7;
+  --good-border: #A7F0D0;
+  --good-text:   #0F7B4A;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--canvas);
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ━━━━━━━━━━ LAYOUT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top app bar (Figma-like toolbar) */
+.app-bar {
+  height: 48px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 1.25rem;
+  gap: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+.app-bar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  flex-shrink: 0;
+}
+
+.app-bar-logo-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+
+.app-bar-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.app-bar-title {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Mobile step nav — shown only on small screens */
+.mobile-step-nav {
+  display: none;
+  padding: 0 1rem 0;
+  gap: 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.mobile-step-nav::-webkit-scrollbar { display: none; }
+
+.mobile-step-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  transition: background 0.12s, color 0.12s;
+  flex-shrink: 0;
+}
+
+.mobile-step-pill:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.mobile-step-pill.active {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.step-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px; height: 18px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.step-badge-1 { background: var(--step-1); }
+.step-badge-2 { background: var(--step-2); }
+.step-badge-3 { background: var(--step-3); }
+
+/* Body area */
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ━━━━━━━━━━ SIDEBAR ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0.75rem;
+  gap: 0.125rem;
+  overflow-y: auto;
+}
+
+.sidebar-section-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.6rem 0.3rem;
+  margin-top: 0.25rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-align: left;
+  width: 100%;
+  transition: background 0.1s, color 0.1s;
+}
+
+.nav-item:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.nav-item.active {
+  background: var(--selected-bg);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.nav-item-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px; height: 20px;
+  border-radius: 5px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.nav-item-badge-1 { background: var(--step-1); }
+.nav-item-badge-2 { background: var(--step-2); }
+.nav-item-badge-3 { background: var(--step-3); }
+
+/* ━━━━━━━━━━ CONTENT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem 2.5rem;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.content-inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ━━━━━━━━━━ TABS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  width: fit-content;
+  background: var(--surface-raised);
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0.45rem 0.9rem;
+  transition: all 0.1s;
+  border-right: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.tab:last-child { border-right: none; }
+
+.tab:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+.tab.active {
+  background: var(--surface);
+  color: var(--text-primary);
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--figma-purple);
+}
+
+/* ━━━━━━━━━━ MARKDOWN ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.markdown-body h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  line-height: 1.25;
+}
+
+.markdown-body h2 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.markdown-body h1 + .markdown-body h2,
+.markdown-body h2:first-child { border-top: none; padding-top: 0; }
+
+.markdown-body h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 1rem;
+  margin-bottom: 0.35rem;
+}
+
+.markdown-body p {
+  color: var(--text-secondary);
+  margin-bottom: 0.65rem;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.markdown-body ul, .markdown-body ol {
+  margin-left: 1.25rem;
+  margin-bottom: 0.65rem;
+}
+
+.markdown-body li {
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.markdown-body strong { color: var(--text-primary); font-weight: 600; }
+
+.markdown-body code {
+  background: #F5F0FF;
+  color: var(--figma-purple);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  font-size: 0.8em;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  border: 1px solid #E8DCFF;
+}
+
+.markdown-body hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.25rem 0;
+}
+
+.markdown-body blockquote {
+  border-left: 2px solid var(--figma-purple);
+  background: #FAFAFF;
+  padding: 0.6rem 0.875rem;
+  border-radius: 0 6px 6px 0;
+  margin: 0.75rem 0;
+}
+
+.markdown-body blockquote p {
+  margin: 0;
+  color: #5B3EA6;
+  font-size: 0.83rem;
+  font-style: italic;
+}
+
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+  font-size: 0.82rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.markdown-body th {
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  font-weight: 600;
+  padding: 0.45rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.markdown-body td {
+  padding: 0.45rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.markdown-body tr:last-child td { border-bottom: none; }
+
+/* ━━━━━━━━━━ DEMO PANELS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.demo-panel {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-top: 1.25rem;
+  background: var(--surface);
+}
+
+.demo-panel.bad  { background: var(--bad-bg);  border-color: var(--bad-border); }
+.demo-panel.good { background: var(--good-bg); border-color: var(--good-border); }
+
+.demo-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.3rem; }
+.demo-title.bad  { color: var(--bad-text); }
+.demo-title.good { color: var(--good-text); }
+
+.demo-desc {
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+
+.demo-desc code {
+  background: rgba(0,0,0,0.05);
+  color: var(--text-primary);
+  padding: 0.08em 0.3em;
+  border-radius: 3px;
+  font-size: 0.8em;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+/* ━━━━━━━━━━ HEAVY TASK INDICATORS ━━━━━━━━━━━━━━━━━━━ */
+.heavy-task-indicator {
+  padding: 0.65rem 0.875rem;
+  border-radius: 7px;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.heavy-task-indicator.bad {
+  background: var(--bad-bg);
+  border: 1px solid var(--bad-border);
+  color: var(--bad-text);
+}
+
+.heavy-task-indicator.good {
+  background: var(--good-bg);
+  border: 1px solid var(--good-border);
+  color: var(--good-text);
+}
+
+/* ━━━━━━━━━━ INPUTS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.input-field {
+  width: 100%;
+  background: var(--surface);
+  border: 1.5px solid var(--border-strong);
+  color: var(--text-primary);
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+
+.input-field:focus {
+  border-color: var(--figma-purple);
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+.input-field::placeholder { color: var(--text-muted); }
+
+/* ━━━━━━━━━━ BUTTONS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.btn-primary {
+  background: var(--figma-purple);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-family: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: opacity 0.12s, transform 0.1s;
+}
+
+.btn-primary:hover  { opacity: 0.88; }
+.btn-primary:active { transform: scale(0.98); }
+
+.btn-danger  { background: var(--figma-red); }
+.btn-success { background: var(--figma-green); }
+
+/* ━━━━━━━━━━ PREVIEW TEXT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.preview-text {
+  margin-top: 0.6rem;
+  min-height: 28px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+/* ━━━━━━━━━━ ANIMATIONS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@keyframes bgPulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+@keyframes bounce  { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+/* ━━━━━━━━━━ RESPONSIVE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .mobile-step-nav { display: flex; padding: 0.4rem 0.75rem; }
+  .content-area { padding: 1.25rem 1rem; }
+  .content-inner { max-width: 100%; }
+}
