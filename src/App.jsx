@@ -8,11 +8,13 @@ import introMd       from './tutorials/01-introduction/tutorial.md?raw';
 import bottleneckMd  from './tutorials/02-rendering-bottleneck/tutorial.md?raw';
 import compositionMd from './tutorials/03-composition/tutorial.md?raw';
 
-import BottleneckSlow       from './tutorials/02-rendering-bottleneck/SlowComponent';
-import BottleneckSolution   from './tutorials/02-rendering-bottleneck/Solution';
+import BottleneckSlow        from './tutorials/02-rendering-bottleneck/SlowComponent';
+import BottleneckSolution    from './tutorials/02-rendering-bottleneck/Solution';
 import BottleneckComposition from './tutorials/02-rendering-bottleneck/CompositionAlt';
-import CompositionBad       from './tutorials/03-composition/BadStructure';
-import CompositionGood    from './tutorials/03-composition/GoodStructure';
+import CodeView02            from './tutorials/02-rendering-bottleneck/CodeView';
+import CompositionBad        from './tutorials/03-composition/BadStructure';
+import CompositionGood       from './tutorials/03-composition/GoodStructure';
+import CodeView03            from './tutorials/03-composition/CodeView';
 
 // ── Tutorial registry ────────────────────────────────
 const TUTORIALS = [
@@ -26,9 +28,10 @@ const TUTORIALS = [
     title: '02. 렌더링 병목 현상',
     md: bottleneckMd, type: 'component',
     components: [
-      { label: 'SlowComponent',       component: <BottleneckSlow /> },
-      { label: 'Solution (memo)',      component: <BottleneckSolution /> },
-      { label: 'Solution (composition)', component: <BottleneckComposition /> },
+      { label: 'SlowComponent',          component: <BottleneckSlow /> },
+      { label: 'Solution (memo)',         component: <BottleneckSolution /> },
+      { label: 'Solution (composition)',  component: <BottleneckComposition /> },
+      { label: '코드 보기',               component: <CodeView02 /> },
     ],
   },
   {
@@ -38,6 +41,7 @@ const TUTORIALS = [
     components: [
       { label: 'Bad Structure',  component: <CompositionBad /> },
       { label: 'Good Structure', component: <CompositionGood /> },
+      { label: '코드 보기',      component: <CodeView03 /> },
     ],
   },
 ];

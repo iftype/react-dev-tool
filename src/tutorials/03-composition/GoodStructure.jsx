@@ -1,158 +1,136 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
-// ─── 동일한 컴포넌트들 ─────────────────────────────
+// ─── 동일한 상품 데이터 & 컴포넌트 ────────────────────
+const PRODUCTS = Array.from({ length: 30 }, (_, i) => ({
+  id: i + 1,
+  name: [
+    '에어맥스 90', '슬림 청바지', '코튼 티셔츠', '레더 재킷',
+    '버킷햇', '캔버스 백팩', '편광 선글라스', '쿼츠 시계', '카드 지갑', '웨빙 벨트',
+  ][i % 10] + ` v${i + 1}`,
+  price: ((i * 13 + 29) % 20 + 1) * 9000 + 9900,
+  category: ['신발', '의류', '의류', '아우터', '잡화', '잡화', '잡화', '시계', '잡화', '잡화'][i % 10],
+  rating: (((i * 7 + 3) % 20) / 10 + 3).toFixed(1),
+}));
 
-const HologramCell = ({ row, col }) => (
-  <div
-    style={{
-      width: '100%', height: '100%',
-      background: `hsl(${(row * 30 + col * 17) % 360}, 90%, 60%)`,
-      opacity: 0.12,
-      transition: 'opacity 0.18s ease, filter 0.18s ease',
-      cursor: 'crosshair',
-      borderRadius: '1px',
-    }}
-    onMouseEnter={e => {
-      e.currentTarget.style.opacity = '1';
-      e.currentTarget.style.filter = 'brightness(1.8) saturate(2) drop-shadow(0 0 6px currentColor)';
-    }}
-    onMouseLeave={e => {
-      e.currentTarget.style.opacity = '0.12';
-      e.currentTarget.style.filter = '';
-    }}
-    title={`hologram (${row},${col})`}
-  />
-);
-
-const HologramBackground = () => {
-  const cells = [];
-  for (let r = 0; r < 10; r++)
-    for (let c = 0; c < 15; c++)
-      cells.push(<HologramCell key={`${r}-${c}`} row={r} col={c} />);
-  return (
-    <div style={{
-      position: 'absolute', inset: 0, borderRadius: '16px', overflow: 'hidden',
-      background: 'linear-gradient(135deg, #052e16 0%, #064e3b 55%, #0f4c35 100%)',
-      display: 'grid',
-      gridTemplateColumns: 'repeat(15, 1fr)',
-      gridTemplateRows: 'repeat(10, 1fr)',
-    }}>
-      {cells}
-    </div>
-  );
+const CAT_COLOR = {
+  신발: '#0D99FF', 의류: '#9747FF', 아우터: '#1BC47D',
+  잡화: '#F24822', 시계: '#FF8C00',
 };
 
-const CardChip = () => (
-  <div style={{ width: '38px', height: '28px', borderRadius: '5px', background: 'linear-gradient(135deg, #fbbf24, #f59e0b)', opacity: 0.9 }} />
-);
-
-const CardBrand = () => (
-  <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.85rem', fontStyle: 'italic', fontWeight: 700 }}>VISA</span>
-);
-
-const CardNumber = ({ number }) => (
-  <p style={{ color: 'white', fontFamily: 'monospace', fontSize: '1.15rem', letterSpacing: '0.15em', margin: '0 0 0.6rem', textShadow: '0 2px 6px rgba(0,0,0,0.5)' }}>
-    {number}
-  </p>
-);
-
-const CardHolder = ({ name }) => (
-  <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.82rem', margin: 0, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-    {name || 'CARD HOLDER'}
-  </p>
-);
-
-const CardTextOverlay = ({ number, holder }) => (
-  <div style={{ position: 'absolute', inset: 0, padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', zIndex: 10 }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-      <CardChip />
-      <CardBrand />
-    </div>
-    <div>
-      <CardNumber number={number} />
-      <CardHolder name={holder} />
-    </div>
-  </div>
-);
-
-const CardShell = ({ children }) => (
-  <div style={{
-    position: 'relative',
-    width: '100%', maxWidth: '360px', height: '210px',
-    borderRadius: '16px', margin: '0 auto 1.5rem',
-    boxShadow: '0 20px 40px rgba(5,46,22,0.4)',
-  }}>
-    {children}
-  </div>
-);
-
-const CardField = ({ label, ...inputProps }) => (
-  <div>
-    <label style={{ display: 'block', marginBottom: '0.35rem', color: '#4a6080', fontSize: '0.82rem', fontWeight: 500 }}>
-      {label}
-    </label>
-    <input className="input-field" {...inputProps} />
-  </div>
-);
-
-// ─────────────────────────────────────────────────────────────────────
-// 핵심 구조:
-//
-// CardInputWrapper: cardNumber/cardHolder 상태를 관리, children을 카드 내부에 배치
-// HologramBackground: GoodStructure(상태 없음)에서 생성 → children으로 전달
-//
-// CardInputWrapper가 리렌더링되어도, children의 참조는 GoodStructure 기준으로
-// 변하지 않으므로 React는 HologramBackground를 건너뜀
-// ─────────────────────────────────────────────────────────────────────
-
-const CardInputWrapper = ({ children }) => {
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardHolder, setCardHolder] = useState('');
-
-  const displayNumber = cardNumber.padEnd(16, '·').replace(/(.{4})/g, '$1 ').trim();
+const ProductCard = ({ name, price, category, rating }) => {
+  const renderCount = useRef(0);
+  renderCount.current++;
+  let s = 0;
+  for (let i = 0; i < 50000; i++) s += Math.sqrt(i);
+  const isRerendered = renderCount.current > 1;
 
   return (
-    <div>
-      <CardShell>
-        {/* children = HologramBackground (외부에서 주입) → 리렌더링 없음 */}
-        {children}
-        {/* 텍스트는 이 컴포넌트 내부 state와 연결 → 정상 업데이트 */}
-        <CardTextOverlay number={displayNumber} holder={cardHolder} />
-      </CardShell>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-        <CardField
-          label="카드 번호"
-          type="text" value={cardNumber}
-          onChange={e => setCardNumber(e.target.value.replace(/\D/g, '').slice(0, 16))}
-          placeholder="숫자 16자리 입력"
-        />
-        <CardField
-          label="카드 소유자"
-          type="text" value={cardHolder}
-          onChange={e => setCardHolder(e.target.value.toUpperCase())}
-          placeholder="HONG GILDONG"
-        />
+    <div style={{
+      background: 'white',
+      border: `1.5px solid ${isRerendered ? '#F24822' : '#E6E6E6'}`,
+      borderRadius: '8px', padding: '0.65rem', transition: 'border-color 0.15s',
+    }}>
+      <p style={{ fontWeight: 600, fontSize: '0.78rem', color: '#1E1E1E', margin: '0 0 0.35rem', lineHeight: 1.3 }}>
+        {name}
+      </p>
+      <span style={{
+        background: CAT_COLOR[category] + '18', color: CAT_COLOR[category],
+        fontSize: '0.65rem', fontWeight: 700, padding: '0.1rem 0.4rem', borderRadius: '4px',
+      }}>
+        {category}
+      </span>
+      <p style={{ color: '#F59E0B', fontSize: '0.72rem', margin: '0.3rem 0 0.15rem' }}>
+        {'★'.repeat(Math.floor(rating))}{'☆'.repeat(5 - Math.floor(rating))} {rating}
+      </p>
+      <p style={{ fontWeight: 700, fontSize: '0.82rem', color: '#1E1E1E', margin: '0 0 0.4rem' }}>
+        {Number(price).toLocaleString()}원
+      </p>
+      <div style={{
+        padding: '0.18rem 0.4rem', borderRadius: '4px', fontSize: '0.65rem', fontWeight: 700,
+        background: isRerendered ? '#FFF5F4' : '#F6FEF9',
+        color: isRerendered ? '#F24822' : '#1BC47D',
+      }}>
+        렌더링 {renderCount.current}회
       </div>
     </div>
   );
 };
 
-export default function GoodStructure() {
+const ProductGrid = ({ products }) => (
+  <div style={{
+    display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+    gap: '0.45rem', marginTop: '0.75rem',
+    maxHeight: '380px', overflowY: 'auto',
+  }}>
+    {products.map(p => <ProductCard key={p.id} {...p} />)}
+  </div>
+);
+
+const SearchBar = ({ query, onChange }) => (
+  <div style={{ position: 'relative' }}>
+    <span style={{
+      position: 'absolute', left: '0.75rem', top: '50%',
+      transform: 'translateY(-50%)', color: '#9A9A9A', pointerEvents: 'none',
+    }}>🔍</span>
+    <input
+      className="input-field"
+      style={{ paddingLeft: '2.25rem' }}
+      value={query}
+      onChange={e => onChange(e.target.value)}
+      placeholder="상품 검색..."
+    />
+  </div>
+);
+
+// ─────────────────────────────────────────────────────────
+// 핵심 구조:
+//
+// SearchWrapper: query state만 관리
+// ProductGrid:  GoodSearch(state 없음)에서 생성 → children으로 전달
+//
+// 타이핑 → SearchWrapper만 리렌더링, GoodSearch는 그대로
+// → children(ProductGrid) 참조 불변 → React가 건너뜀 ✅
+// ─────────────────────────────────────────────────────────
+
+const SearchWrapper = ({ children }) => {
+  const [query, setQuery] = useState('');
+
+  return (
+    <div>
+      <SearchBar query={query} onChange={setQuery} />
+
+      {query && (
+        <div style={{
+          marginTop: '0.5rem', padding: '0.4rem 0.75rem',
+          background: '#F6FEF9', border: '1px solid #A7F0D0',
+          borderRadius: '6px', fontSize: '0.8rem', color: '#0F7B4A',
+        }}>
+          ✅ <strong>"{query}"</strong> 타이핑 중 → SearchWrapper만 리렌더링, ProductCard 건너뜀
+        </div>
+      )}
+
+      {/* children = ProductGrid (외부에서 주입) → 리렌더링 없음 */}
+      {children}
+    </div>
+  );
+};
+
+export default function GoodSearch() {
+  // state 없음 → 절대 리렌더링 안 됨
   return (
     <div className="demo-panel good">
-      <h3 className="demo-title good">카드 프리뷰 (Good)</h3>
+      <h3 className="demo-title good">상품 검색 (Good)</h3>
       <p className="demo-desc">
-        상태를 <code>CardInputWrapper</code> 안으로 격리하고, <code>HologramBackground</code>를 <code>children</code>으로 주입했습니다.<br />
-        카드 번호를 타이핑해도 150개의 <code>HologramCell</code>은 리렌더링을 건너뜁니다.<br />
-        배경에 마우스를 올리면 — hover 인터랙션도 여전히 완벽하게 작동합니다.
+        검색어 state를 <code>SearchWrapper</code> 안으로 격리하고, <code>ProductGrid</code>를 <code>children</code>으로 주입했습니다.<br />
+        타이핑해도 카드의 <strong>렌더링 횟수가 1회에서 고정</strong>됩니다. 배경이 초록색 테두리 상태 유지.
       </p>
 
-      {/* HologramBackground는 GoodStructure(상태 없음)에서 생성됨
-          → CardInputWrapper가 아무리 리렌더링돼도 이 요소의 참조는 불변 */}
-      <CardInputWrapper>
-        <HologramBackground />
-      </CardInputWrapper>
+      {/* ProductGrid는 GoodSearch(state 없음)에서 생성됨
+          → GoodSearch가 리렌더링되지 않으므로 이 요소의 참조는 항상 동일
+          → SearchWrapper가 아무리 리렌더링돼도 children은 건너뜀 ✅ */}
+      <SearchWrapper>
+        <ProductGrid products={PRODUCTS} />
+      </SearchWrapper>
     </div>
   );
 }

@@ -1,138 +1,121 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
-// ─── 홀로그램 배경 (마우스 hover 개별 반응 → 이미지 불가) ─────
+// ─── 30개 가상 상품 데이터 ─────────────────────────────
+const PRODUCTS = Array.from({ length: 30 }, (_, i) => ({
+  id: i + 1,
+  name: [
+    '에어맥스 90', '슬림 청바지', '코튼 티셔츠', '레더 재킷',
+    '버킷햇', '캔버스 백팩', '편광 선글라스', '쿼츠 시계', '카드 지갑', '웨빙 벨트',
+  ][i % 10] + ` v${i + 1}`,
+  price: ((i * 13 + 29) % 20 + 1) * 9000 + 9900,
+  category: ['신발', '의류', '의류', '아우터', '잡화', '잡화', '잡화', '시계', '잡화', '잡화'][i % 10],
+  rating: (((i * 7 + 3) % 20) / 10 + 3).toFixed(1),
+}));
 
-const HologramCell = ({ row, col }) => (
-  <div
-    style={{
-      width: '100%', height: '100%',
-      background: `hsl(${(row * 30 + col * 17) % 360}, 90%, 60%)`,
-      opacity: 0.12,
-      transition: 'opacity 0.18s ease, filter 0.18s ease',
-      cursor: 'crosshair',
-      borderRadius: '1px',
-    }}
-    onMouseEnter={e => {
-      e.currentTarget.style.opacity = '1';
-      e.currentTarget.style.filter = 'brightness(1.8) saturate(2) drop-shadow(0 0 6px currentColor)';
-    }}
-    onMouseLeave={e => {
-      e.currentTarget.style.opacity = '0.12';
-      e.currentTarget.style.filter = '';
-    }}
-    title={`hologram (${row},${col})`}
-  />
-);
+const CAT_COLOR = {
+  신발: '#0D99FF', 의류: '#9747FF', 아우터: '#1BC47D',
+  잡화: '#F24822', 시계: '#FF8C00',
+};
 
-const HologramBackground = () => {
-  const cells = [];
-  for (let r = 0; r < 10; r++)
-    for (let c = 0; c < 15; c++)
-      cells.push(<HologramCell key={`${r}-${c}`} row={r} col={c} />);
+// ─── 의도적으로 무거운 컴포넌트 ────────────────────────
+const ProductCard = ({ name, price, category, rating }) => {
+  const renderCount = useRef(0);
+  renderCount.current++;
+
+  // 인위적인 무거운 연산
+  let s = 0;
+  for (let i = 0; i < 50000; i++) s += Math.sqrt(i);
+
+  const isRerendered = renderCount.current > 1;
+
   return (
     <div style={{
-      position: 'absolute', inset: 0, borderRadius: '16px', overflow: 'hidden',
-      background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 55%, #1e3a5f 100%)',
-      display: 'grid',
-      gridTemplateColumns: 'repeat(15, 1fr)',
-      gridTemplateRows: 'repeat(10, 1fr)',
+      background: 'white',
+      border: `1.5px solid ${isRerendered ? '#F24822' : '#E6E6E6'}`,
+      borderRadius: '8px', padding: '0.65rem',
+      transition: 'border-color 0.15s',
     }}>
-      {cells}
+      <p style={{ fontWeight: 600, fontSize: '0.78rem', color: '#1E1E1E', margin: '0 0 0.35rem', lineHeight: 1.3 }}>
+        {name}
+      </p>
+      <span style={{
+        background: CAT_COLOR[category] + '18', color: CAT_COLOR[category],
+        fontSize: '0.65rem', fontWeight: 700,
+        padding: '0.1rem 0.4rem', borderRadius: '4px',
+      }}>
+        {category}
+      </span>
+      <p style={{ color: '#F59E0B', fontSize: '0.72rem', margin: '0.3rem 0 0.15rem' }}>
+        {'★'.repeat(Math.floor(rating))}{'☆'.repeat(5 - Math.floor(rating))} {rating}
+      </p>
+      <p style={{ fontWeight: 700, fontSize: '0.82rem', color: '#1E1E1E', margin: '0 0 0.4rem' }}>
+        {Number(price).toLocaleString()}원
+      </p>
+      <div style={{
+        padding: '0.18rem 0.4rem', borderRadius: '4px', fontSize: '0.65rem', fontWeight: 700,
+        background: isRerendered ? '#FFF5F4' : '#F6FEF9',
+        color: isRerendered ? '#F24822' : '#1BC47D',
+      }}>
+        렌더링 {renderCount.current}회
+      </div>
     </div>
   );
 };
 
-// ─── 카드 텍스트 레이어 ─────────────────────────────
-
-const CardChip = () => (
-  <div style={{ width: '38px', height: '28px', borderRadius: '5px', background: 'linear-gradient(135deg, #fbbf24, #f59e0b)', opacity: 0.9 }} />
-);
-
-const CardBrand = () => (
-  <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.85rem', fontStyle: 'italic', fontWeight: 700 }}>VISA</span>
-);
-
-const CardNumber = ({ number }) => (
-  <p style={{ color: 'white', fontFamily: 'monospace', fontSize: '1.15rem', letterSpacing: '0.15em', margin: '0 0 0.6rem', textShadow: '0 2px 6px rgba(0,0,0,0.5)' }}>
-    {number}
-  </p>
-);
-
-const CardHolder = ({ name }) => (
-  <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.82rem', margin: 0, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-    {name || 'CARD HOLDER'}
-  </p>
-);
-
-const CardTextOverlay = ({ number, holder }) => (
-  <div style={{ position: 'absolute', inset: 0, padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', zIndex: 10 }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-      <CardChip />
-      <CardBrand />
-    </div>
-    <div>
-      <CardNumber number={number} />
-      <CardHolder name={holder} />
-    </div>
-  </div>
-);
-
-const CardShell = ({ children }) => (
+const ProductGrid = ({ products }) => (
   <div style={{
-    position: 'relative',
-    width: '100%', maxWidth: '360px', height: '210px',
-    borderRadius: '16px', margin: '0 auto 1.5rem',
-    boxShadow: '0 20px 40px rgba(30,27,75,0.35)',
+    display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+    gap: '0.45rem', marginTop: '0.75rem',
+    maxHeight: '380px', overflowY: 'auto',
   }}>
-    {children}
+    {products.map(p => <ProductCard key={p.id} {...p} />)}
   </div>
 );
 
-const CardField = ({ label, ...inputProps }) => (
-  <div>
-    <label style={{ display: 'block', marginBottom: '0.35rem', color: '#4a6080', fontSize: '0.82rem', fontWeight: 500 }}>
-      {label}
-    </label>
-    <input className="input-field" {...inputProps} />
+const SearchBar = ({ query, onChange }) => (
+  <div style={{ position: 'relative' }}>
+    <span style={{
+      position: 'absolute', left: '0.75rem', top: '50%',
+      transform: 'translateY(-50%)', color: '#9A9A9A', pointerEvents: 'none',
+    }}>🔍</span>
+    <input
+      className="input-field"
+      style={{ paddingLeft: '2.25rem' }}
+      value={query}
+      onChange={e => onChange(e.target.value)}
+      placeholder="상품 검색..."
+    />
   </div>
 );
 
-// ─── BadStructure: 상태가 외부에 있어 HologramBackground까지 리렌더링됨 ─────
+// ─── BadSearch: query state가 바깥에 있어 ProductGrid가 덩달아 리렌더링 ─────
 
-export default function BadStructure() {
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardHolder, setCardHolder] = useState('');
-
-  const displayNumber = cardNumber.padEnd(16, '·').replace(/(.{4})/g, '$1 ').trim();
+export default function BadSearch() {
+  const [query, setQuery] = useState('');
 
   return (
     <div className="demo-panel bad">
-      <h3 className="demo-title bad">카드 프리뷰 (Bad)</h3>
+      <h3 className="demo-title bad">상품 검색 (Bad)</h3>
       <p className="demo-desc">
-        카드 번호를 입력할 때마다 <code>BadStructure</code> 전체가 리렌더링됩니다.<br />
-        그 결과 <code>HologramBackground</code> 내부의 150개 <code>HologramCell</code>도 전부 다시 그려집니다.<br />
-        배경에 마우스를 올려보세요 — 각 셀이 개별 반응하는 것이 이미지로 대체할 수 없는 이유입니다.
+        검색어를 타이핑할 때마다 <code>BadSearch</code> 전체가 리렌더링됩니다.<br />
+        <code>ProductGrid</code>는 검색어를 전혀 사용하지 않는데도 <code>ProductCard</code> 30개가 전부 다시 그려집니다.<br />
+        각 카드의 <strong>렌더링 횟수</strong>가 올라가는 것을 확인해보세요.
       </p>
 
-      <CardShell>
-        <HologramBackground />
-        <CardTextOverlay number={displayNumber} holder={cardHolder} />
-      </CardShell>
+      <SearchBar query={query} onChange={setQuery} />
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-        <CardField
-          label="카드 번호"
-          type="text" value={cardNumber}
-          onChange={e => setCardNumber(e.target.value.replace(/\D/g, '').slice(0, 16))}
-          placeholder="숫자 16자리 입력"
-        />
-        <CardField
-          label="카드 소유자"
-          type="text" value={cardHolder}
-          onChange={e => setCardHolder(e.target.value.toUpperCase())}
-          placeholder="HONG GILDONG"
-        />
-      </div>
+      {query && (
+        <div style={{
+          marginTop: '0.5rem', padding: '0.4rem 0.75rem',
+          background: '#FFF5F4', border: '1px solid #FFCDC7',
+          borderRadius: '6px', fontSize: '0.8rem', color: '#C73B1B',
+        }}>
+          ⚠️ <strong>"{query}"</strong> 타이핑 중 → ProductCard 30개 전부 리렌더링
+        </div>
+      )}
+
+      {/* ← 문제: ProductGrid가 query를 쓰지 않아도 부모가 리렌더링되면 따라서 리렌더링 */}
+      <ProductGrid products={PRODUCTS} />
     </div>
   );
 }
